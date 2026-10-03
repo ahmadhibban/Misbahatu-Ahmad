@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Aqua Tasbih Pro</title>
+    <!-- Alpine.js ও SweetAlert2 লাইব্রেরি -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- দোয়া লিস্টের এক্সটার্নাল ফাইল -->
+    <script src="duas.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Hind+Siliguri:wght@400;500;700&display=swap');
+        *{margin:0;padding:0;box-sizing:border-box;user-select:none;-webkit-tap-highlight-color:transparent;outline:none}
+        body{background:linear-gradient(180deg,#0a4f70 0%,#032b45 100%);height:100vh;display:flex;justify-content:center;align-items:center;font-family:'Hind Siliguri',sans-serif;overflow:hidden}
+        .app{width:100vw;height:100vh;background:#0e496966;backdrop-filter:blur(15px);display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:25px 20px}
+        
+        /* দোয়া কার্ড, উচ্চারণ এবং অর্থ ডিজাইন */
+        .card{width:100%;background:#08304780;border-radius:20px;padding:20px 15px;box-shadow:inset 5px 5px 15px #0006,inset -5px -5px 15px #fff1;border:1px solid #fff2;cursor:grab;transition:.2s;display:flex;flex-direction:column;align-items:center;gap:8px}
+        .card:active{cursor:grabbing;transform:scale(.97)}
+        .ar{font-family:'Amiri',serif;font-size:38px;color:#e2f1f8;text-shadow:0 2px 10px #e2f1f84d;direction:rtl;min-height:55px;display:flex;align-items:center}
+        .divider{width:70%;height:1px;background:linear-gradient(90deg,#fff0,#fff3,#fff0);margin:5px 0}
+        .pron{font-size:14px;color:#a4c6db;font-weight:500}
+        .mean{font-size:14px;color:#00fa9a;font-weight:500;text-shadow:0 0 5px #00fa9a4d}
+        
+        .txt{font-size:13px;color:#8ab4cd;margin-top:12px;text-align:center}
+        .row{display:flex;justify-content:space-between;width:100%;padding:0 15px}
+        .btn{width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#fff2,#fff0);border:1px solid #fff3;display:flex;justify-content:center;align-items:center;box-shadow:5px 5px 15px #0005,-5px -5px 15px #fff1;cursor:pointer;transition:.2s;color:#ff6b6b;font-size:30px;font-weight:700}
+        .btn:active{box-shadow:inset 4px 4px 8px #0006;transform:scale(.92)}
+        .btn svg{width:24px;height:24px;stroke-width:2.5;fill:none;stroke:currentColor}
+        
+        /* বড় করা সার্কেল */
+        .c-ring{position:relative;width:270px;height:270px;border-radius:50%;background:#0a3c574d;border:1px solid #fff2;box-shadow:10px 10px 25px #0006,-10px -10px 25px #fff1;display:flex;justify-content:center;align-items:center;cursor:pointer;transition:.1s}
+        .c-ring:active{transform:scale(.97)}
+        svg.ring{position:absolute;width:100%;height:100%;transform:rotate(-90deg);pointer-events:none}
+        .bg-c{fill:none;stroke:#fff1;stroke-width:14}
+        .pr-c{fill:none;stroke:#00fa9a;stroke-width:14;stroke-linecap:round;stroke-dasharray:666;filter:drop-shadow(0 0 8px #00fa9a);transition:stroke-dashoffset .25s ease}
+        
+        /* নতুন রিয়েলিস্টিক থ্রিডি মার্বেল পাথর */
+        .dot{position:absolute;width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#e6ffff 0%,#80e5ff 15%,#0099cc 40%,#004d66 70%,#001a22 100%);box-shadow:inset -6px -6px 12px #0009,inset 4px 4px 10px #ffffffcc,0 6px 15px #00ffff66;z-index:10;transform:translate(-50%,-50%);transition:left .25s ease,top .25s ease;pointer-events:none}
+        
+        /* ছোট করা ফন্ট */
+        .c-txt{position:absolute;text-align:center;pointer-events:none;display:flex;align-items:baseline;gap:5px}
+        .c-txt span{color:#fff;text-shadow:0 4px 10px #0006;font-weight:700}
+        .v-num{font-size:66px} .v-lim{font-size:20px;color:#8ab4cd}
+        
+        .tot{background:#062638b3;padding:12px 40px;border-radius:15px;color:#a4c6db;box-shadow:inset 3px 3px 6px #0006;border:1px solid #fff1;font-weight:700}
+        .swal-font{font-family:'Hind Siliguri',sans-serif!important}
+    </style>
+</head>
+<body x-data="tasbih()">
+    <div class="app">
+        <!-- দোয়া কার্ড ও সোয়াইপ -->
+        <div style="width:100%;margin-top:5px">
+            <div class="card" @mousedown="swp($event,'s')" @mouseup="swp($event,'e')" @touchstart.passive="swp($event,'s')" @touchend.passive="swp($event,'e')">
+                <div class="ar" x-text="itm.ar"></div>
+                <div class="divider"></div>
+                <div class="pron" x-text="itm.pr"></div>
+                <div class="mean" x-text="itm.mn"></div>
+            </div>
+            <div class="txt">ডানে-বামে বা উপরে-নিচে সোয়াইপ করে দোয়া পরিবর্তন করুন</div>
+        </div>
+        <!-- রিসেট ও সাউন্ড বাটন -->
+        <div class="row">
+            <div class="btn" style="color:#2ecc71" @click="res()"><svg><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg></div>
+            <div class="btn" style="color:#ff9f43" @click="spk()"><svg><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></div>
+        </div>
+        <!-- মেইন কাউন্টার ও প্রোগ্রেস বার -->
+        <div class="c-ring" @click="inc()">
+            <svg class="ring"><circle cx="135" cy="135" r="106" class="bg-c"/><circle cx="135" cy="135" r="106" class="pr-c" :style="`stroke-dashoffset:${off}`"/></svg>
+            <div class="dot" :style="dot"></div>
+            <div class="c-txt"><span class="v-num" x-text="bn(cur.c)"></span> <span class="v-lim" x-text="'/ '+bn(itm.lm)"></span></div>
+        </div>
+        <!-- মাইনাস ও প্লাস (চক্র) বাটন -->
+        <div class="row">
+            <div class="btn" @click="dec()">–</div>
+            <div class="btn" style="color:#fff;font-size:24px" @click.stop="inc()" x-text="bn(cur.y)"></div>
+        </div>
+        <!-- সর্বমোট কাউন্ট -->
+        <div class="tot" x-text="'সর্বমোট: '+bn(cur.t)"></div>
+    </div>
+
+    <script>
+        document.addEventListener('alpine:init',()=>{
+            Alpine.data('tasbih',()=> {
+                // duas.js থেকে ডেটা পড়বে, যদি না থাকে তবে ডিফল্ট হিসেবে একটি খালি array নেবে
+                let list = typeof duasList !== 'undefined' ? duasList : [];
+                
+                // লোকাল স্টোরেজ থেকে ডেটা নিয়ে নতুন দোয়ার সাথে সিঙ্ক করা
+                let savedData = JSON.parse(localStorage.getItem('tasbih_data')) || [];
+                let initialSt = list.map((dua, i) => savedData[i] || {c:0, y:0, t:0});
+
+                return {
+                    dIdx:0, sx:0, sy:0,
+                    arr: list,
+                    st: initialSt,
+                    
+                    init() { 
+                        this.$watch('st', val => localStorage.setItem('tasbih_data', JSON.stringify(val)), {deep: true});
+                    },
+                    get cur(){ return this.st[this.dIdx] },
+                    get itm(){ return this.arr[this.dIdx] },
+                    get off(){ return 666 - (this.cur.c / this.itm.lm) * 666 },
+                    get dot(){ let a=(this.cur.c / this.itm.lm)*2*Math.PI-Math.PI/2; return `left:${135+106*Math.cos(a)}px;top:${135+106*Math.sin(a)}px`},
+                    bn(n){ return n.toString().replace(/\d/g,d=>'০১২৩৪৫৬৭৮৯'[d]) },
+                    bp(f=600,d=.05){ try{let c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.05,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+d);o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+d)}catch(e){} },
+                    inc(){ if(this.cur.c===this.itm.lm){ this.cur.c=1; this.cur.y++; this.bp(800,.15) } else { this.cur.c++; this.bp() } this.cur.t++ },
+                    dec(){ if(this.cur.t>0){ this.cur.t--; this.bp(450,.1); if(this.cur.c===1&&this.cur.y>0){ this.cur.c=this.itm.lm; this.cur.y-- } else if(this.cur.c===0&&this.cur.y>0){ this.cur.c=this.itm.lm; this.cur.y-- } else if(this.cur.c>0) this.cur.c-- } },
+                    res(){ Swal.fire({title:'রিসেট করতে চান?',text:'বর্তমান দোয়ার সমস্ত কাউন্ট শূন্য হয়ে যাবে!',icon:'warning',showCancelButton:true,confirmButtonColor:'#2ecc71',cancelButtonColor:'#ff6b6b',confirmButtonText:'হ্যাঁ, রিসেট করুন',cancelButtonText:'বাতিল',background:'#0a3a55',color:'#e2f1f8',customClass:{popup:'swal-font',title:'swal-font',confirmButton:'swal-font',cancelButton:'swal-font',htmlContainer:'swal-font'}}).then(r=>{ if(r.isConfirmed){ this.cur.c=0; this.cur.y=0; this.cur.t=0; this.bp(300,.3) } }) },
+                    
+                    /* আপডেট করা সাউন্ড API - যা আগের চেয়ে অনেক ফাস্ট এবং ব্লক হয় না */
+                    spk(){ 
+                        let audioUrl = "https://translate.googleapis.com/translate_tts?client=gtx&ie=UTF-8&tl=ar&q=" + encodeURIComponent(this.itm.ar);
+                        let audio = new Audio(audioUrl);
+                        
+                        audio.play().catch(e => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'সমস্যা হচ্ছে',
+                                text: 'উচ্চারণটি শোনার জন্য আপনার ইন্টারনেট সংযোগ চেক করুন।',
+                                background: '#0a3a55',
+                                color: '#e2f1f8',
+                                confirmButtonColor: '#ff9f43',
+                                customClass:{popup:'swal-font',title:'swal-font',confirmButton:'swal-font',htmlContainer:'swal-font'}
+                            });
+                        });
+                    },
+                    
+                    swp(e,t){ 
+                        let m=e.type.includes('mouse'); 
+                        if(t==='s'){ 
+                            this.sx=m?e.clientX:e.touches[0].clientX; 
+                            this.sy=m?e.clientY:e.touches[0].clientY 
+                        } else { 
+                            let dx=(m?e.clientX:e.changedTouches[0].clientX)-this.sx;
+                            let dy=(m?e.clientY:e.changedTouches[0].clientY)-this.sy; 
+                            let len = this.arr.length; // ডায়নামিক লেন্থ
+                            if(Math.abs(dx)>40||Math.abs(dy)>40){ 
+                                if(Math.abs(dx)>Math.abs(dy)){
+                                    this.dIdx = dx>0 ? (this.dIdx + len - 1) % len : (this.dIdx + 1) % len;
+                                } else {
+                                    this.dIdx = dy>0 ? (this.dIdx + len - 1) % len : (this.dIdx + 1) % len;
+                                }
+                                this.bp(700,.05); 
+                            } 
+                        } 
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
