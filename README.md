@@ -1,5 +1,7 @@
 # Misbahatu Ahmad (مسبحة أحمد)
 
+> 🌐 **Live Web Application**: [https://ahmadhibban.github.io/Misbahatu-Ahmad/](https://ahmadhibban.github.io/Misbahatu-Ahmad/) — *Open and use directly in any web browser without installation.*
+
 Misbahatu Ahmad is an Android digital Tasbih, Dhikr, and Daily Dua recitation application featuring interactive web-based UI and Android Text-to-Speech (TTS) integration.
 
 ## ✨ Features
