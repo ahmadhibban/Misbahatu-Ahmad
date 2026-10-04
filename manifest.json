@@ -1,0 +1,17 @@
+{
+  "name": "مسبحة أحمد - Misbahatu Ahmad",
+  "short_name": "Misbahatu Ahmad",
+  "author": "Ahmad Hibban",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a4f70",
+  "theme_color": "#0a4f70",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "./icon.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    }
+  ]
+}
